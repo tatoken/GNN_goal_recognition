@@ -12,6 +12,7 @@ from Savers import SaverItem
 
 from Data.MapFirstType import MapFirstType
 from Data.MapSecondType import MapSecondType
+import MapZip 
 
 def dfs(graph, start, goal,randomJump=False):
     stack = [(start, [start])]
@@ -47,6 +48,17 @@ def visualize_map(map_info,path):
 
 if __name__ == "__main__":
 
+    size=16
+    file=1
+    
+    for i in [16,32,128]:
+        for f in range(1,101):
+            datasetFile=f"dataset/maps_dataset_{i}/maps_dataset_{i}_{f}.json"
+            datasetFileOutput=f"datasetMapsNew/maps_dataset_{i}/maps_dataset_{i}_{f}.json"
+            MapZip.convert_file(datasetFile,datasetFileOutput)
+        
+
+    """
     size = 128
     file_number=0
     datasetFile=f"DatasetSpezzatoOgni10/DfsPathDatasetSize{size}File{file_number}.json"
@@ -115,4 +127,4 @@ if __name__ == "__main__":
 
             
 
-    
+    """
