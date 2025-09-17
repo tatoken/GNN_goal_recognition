@@ -48,21 +48,13 @@ class PathVisualizer(QWidget):
         i=0
         for r in range(self.size):
             for c in range(self.size):
-                i+=1
                 x = c * self.cell_size
                 y = r * self.cell_size
                 rect = QGraphicsRectItem(x, y, self.cell_size, self.cell_size)
 
                 # Colori e testo
-                if i == self.S:
-                    rect.setBrush(QBrush(QColor(0, 128, 0)))  # verde
-                    text = QGraphicsTextItem("START")
-                    text.setDefaultTextColor(Qt.GlobalColor.white)
-                elif i == self.G:
-                    rect.setBrush(QBrush(QColor(255, 215, 0)))  # giallo
-                    text = QGraphicsTextItem("GOAL")
-                    text.setDefaultTextColor(Qt.GlobalColor.black)
-                elif self.M[r][c] == 1:
+
+                if self.M[r][c] == 1:
                     rect.setBrush(QBrush(QColor(220, 20, 60)))  # rosso
                     text = QGraphicsTextItem(str(i))
                     text.setDefaultTextColor(Qt.GlobalColor.black)
@@ -81,6 +73,7 @@ class PathVisualizer(QWidget):
                         y + self.cell_size / 2 - text.boundingRect().height() / 2
                     )
                     self.scene.addItem(text)
+                i+=1
 
         # Imposta dimensione scena
         self.scene.setSceneRect(0, 0, self.size * self.cell_size, self.size * self.cell_size)
@@ -101,7 +94,7 @@ class PathVisualizer(QWidget):
 
         cell = self.path_list[self._path_index]
         r = (cell // self.size)
-        c = (cell % self.size)-1
+        c = (cell % self.size)
 
         for item in self.scene.items():
             if isinstance(item, QGraphicsRectItem):
