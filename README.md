@@ -48,7 +48,8 @@ posizione attuale dell’agente,
 celle già visitate.
 
 ## 📦 Librerie Utilizzate
-(da completare e aggiornare nei vari commit)
+PyQt6
+networkx
 
 ## 📌 Roadmap / ToDo
 Implementare diversi algoritmi di pathfinding (DFS e varianti)

@@ -3,6 +3,6 @@ from typing import List, Tuple
 
 @dataclass
 class Item:
-    V: List[Tuple[int, int, int]]
+    V: List[List[Tuple[int, int, int]]]
     E: List[Tuple[int, int]]
-    Y: List[int]
+    Y: List[List[int]]
