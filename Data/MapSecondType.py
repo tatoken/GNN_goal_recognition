@@ -11,7 +11,7 @@ class MapSecondType:
 
         self.goals=goals
         
-        self.item=Item(self.makeV(),self.makeE(mapGraph),self.makeY())
+        self.item=Item(self.makeV(),self.makeE(mapGraph),self.makeY(),self.paths)
 
     def makeV(self):
         resV=[]
@@ -28,6 +28,7 @@ class MapSecondType:
 
             resV.append(res)
         return resV
+    
             
     def makeY(self):
 

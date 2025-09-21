@@ -110,7 +110,7 @@ if __name__ == "__main__":
             item=mapSecond.getItem()
                 
             file_number+=1
-            datasetFile=f"DatasetSpezzatoOgni10/DfsPathDatasetSize{size}File{file_number}.json"
+            datasetFile=f"DatasetSpezzatoOgni10/DijkstraPathDatasetSize{size}File{file_number}.json"
             
             SaverItem.save_items(item,datasetFile)
 
