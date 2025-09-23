@@ -90,7 +90,7 @@ if __name__ == "__main__":
                 solution_paths.append(DijkstraPath)
                 goals.append(destination)
 
-            mapSecond=MapSecondType(solution_paths,graphMapTranslater.translateMapIntoGraph(),goals)
+            mapSecond=MapSecondType(solution_paths,newGraph,goals)
             item=mapSecond.getItem()
                 
             file_number+=1
