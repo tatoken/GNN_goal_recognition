@@ -4,13 +4,28 @@ from PyQt6.QtCore import Qt,QTimer
 import time
 
 class PathVisualizer(QWidget):
-    def __init__(self, size, M, S, G,path_list,delay):
+    def __init__(self, size, M, S, G,path_list,cells_mapping,delay):
         super().__init__()
         self.size = size
         self.M = M
-        self.S = S
-        self.G = G
+
+        chiave = None
+        for k, v in cells_mapping.items():
+            if v == S:
+                chiave = k
+                break
+
+        self.S=chiave[0]*size + chiave[1]
+
+        for k, v in cells_mapping.items():
+            if v == G:
+                chiave = k
+                break
+        self.G=chiave[0]*size + chiave[1]
+
+
         self.path_list=path_list
+        self.cells_mapping=cells_mapping
         self.delay=delay
         self.cell_size = 50
         self.initUI()
@@ -53,14 +68,22 @@ class PathVisualizer(QWidget):
                 rect = QGraphicsRectItem(x, y, self.cell_size, self.cell_size)
 
                 # Colori e testo
-
-                if self.M[r][c] == 1:
+                if i == self.S:
+                    rect.setBrush(QBrush(QColor(0, 128, 0)))  # verde
+                    text = QGraphicsTextItem("START")
+                    text.setDefaultTextColor(Qt.GlobalColor.white)
+                elif i == self.G:
+                    rect.setBrush(QBrush(QColor(255, 215, 0)))  # giallo
+                    text = QGraphicsTextItem("GOAL")
+                    text.setDefaultTextColor(Qt.GlobalColor.black)
+                elif self.M[r][c] == 1:
                     rect.setBrush(QBrush(QColor(220, 20, 60)))  # rosso
-                    text = QGraphicsTextItem(str(i))
+                    text = QGraphicsTextItem("")
                     text.setDefaultTextColor(Qt.GlobalColor.black)
                 else:
                     rect.setBrush(QBrush(QColor(211, 211, 211)))  # grigio chiaro
-                    text = QGraphicsTextItem(str(i))
+                    node=(r,c)
+                    text = QGraphicsTextItem(str(self.cells_mapping[node]))
                     text.setDefaultTextColor(Qt.GlobalColor.black)
 
                 rect.setPen(QPen(Qt.GlobalColor.black, 1))
@@ -92,9 +115,17 @@ class PathVisualizer(QWidget):
             self._timer.stop()
             return
 
+
         cell = self.path_list[self._path_index]
-        r = (cell // self.size)
-        c = (cell % self.size)
+
+        chiave = None
+        for k, v in self.cells_mapping.items():
+            if v == cell:
+                chiave = k
+                break
+
+        r = chiave[0]
+        c = chiave[1]
 
         for item in self.scene.items():
             if isinstance(item, QGraphicsRectItem):
@@ -110,4 +141,10 @@ class PathVisualizer(QWidget):
         self.view.scale(1.2, 1.2) 
     
     def zoom_out(self):
-        self.view.scale(0.8, 0.8) 
+        self.view.scale(0.8, 0.8)  
+    
+    def zoom_in(self):
+        self.view.scale(1.2, 1.2) 
+    
+    def zoom_out(self):
+        self.view.scale(0.8, 0.8)

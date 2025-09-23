@@ -30,15 +30,16 @@ def dfs(graph, start, goal,randomJump=False):
     return None
 
 
-def visualize_map(map_info,path):
+def visualize_map(map_info,path,source,destination,cells_mapping):
 
     app = QApplication(sys.argv)
     window = PathVisualizer(
         map_info.size,
         map_info.map_data,
-        map_info.source_destination[0],
-        map_info.source_destination[1],
-        path
+        source,
+        destination,
+        path,
+        cells_mapping
         ,5
     )
     window.show()
@@ -66,40 +67,23 @@ if __name__ == "__main__":
 
                 G = nx.Graph()
 
-                for nodo, vicini in graphMapTranslater.translateMapIntoGraph().items():
+                newGraph,coord_to_node=graphMapTranslater.translateMapIntoGraph()
+                
+                numberOfFreeCell=len(newGraph.items())
+
+                for nodo, vicini in newGraph.items():
                     for v in vicini:
                         G.add_edge(nodo, v)
 
-                #visualize_map(map_info[m],[0,1])
+                source=random.randint(0,numberOfFreeCell-1)
+                destination=random.randint(0,numberOfFreeCell-1)
 
-                rS = (map_info[m].source_destinations[sd][0] // map_info[m].size)
-                cS = (map_info[m].source_destinations[sd][0] % map_info[m].size)
-
-                rD = (map_info[m].source_destinations[sd][1] // map_info[m].size)
-                cD = (map_info[m].source_destinations[sd][1] % map_info[m].size)
-
-                source=map_info[m].source_destinations[sd][0]
-                destination=map_info[m].source_destinations[sd][1]
-                
-                if(   (map_info[m].map_data[rS][cS]!=0 or map_info[m].map_data[rD][cD]!=0)   or   (rS==rD and cS==cD)   ):
-
-                    ended=False
-                    while not ended:
-                        sourceX=random.randint(0,map_info[m].size-1)
-                        sourceY=random.randint(0,map_info[m].size-1)
-                        if(map_info[m].map_data[sourceX][sourceY]==0):
-                            source=sourceX*map_info[m].size+sourceY
-                            ended=True
-
-                    ended=False
-                    while not ended:
-                        destinationX=random.randint(0,map_info[m].size-1)
-                        destinationY=random.randint(0,map_info[m].size-1)
-                        if(map_info[m].map_data[sourceX][sourceY]==0 and (destinationX!=sourceX and destinationY!= sourceY)):
-                            destination=destinationX*map_info[m].size+destinationY
-                            ended=True
+                while not source!=destination:
+                    destination=random.randint(0,numberOfFreeCell-1)
 
                 DijkstraPath= nx.astar_path(G,source, destination)
+
+                #visualize_map(map_info[m],DijkstraPath,source,destination,coord_to_node)
                 #DfsPath = dfs(graphMapTranslater.translateMapIntoGraph(), source, destination)
                 #DfsRandomPath = dfs(graphMapTranslater.translateMapIntoGraph(),source, destination,True)
                 
