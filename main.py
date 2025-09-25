@@ -81,20 +81,20 @@ if __name__ == "__main__":
                 while not source!=destination:
                     destination=random.randint(0,numberOfFreeCell-1)
 
-                DijkstraPath= nx.astar_path(G,source, destination)
+                #DijkstraPath= nx.astar_path(G,source, destination)
 
                 #visualize_map(map_info[m],DijkstraPath,source,destination,coord_to_node)
-                #DfsPath = dfs(graphMapTranslater.translateMapIntoGraph(), source, destination)
+                DfsPath = dfs(newGraph, source, destination)
                 #DfsRandomPath = dfs(graphMapTranslater.translateMapIntoGraph(),source, destination,True)
                 
-                solution_paths.append(DijkstraPath)
+                solution_paths.append(DfsPath)
                 goals.append(destination)
 
             mapSecond=MapSecondType(solution_paths,newGraph,goals)
             item=mapSecond.getItem()
                 
             file_number+=1
-            datasetFile=f"DatasetSpezzatoOgni10/DijkstraPathDatasetSize{size}File{file_number}.json"
+            datasetFile=f"Dfs16/DfsPathDatasetSize{size}File{file_number}.json"
             
             SaverItem.save_items(item,datasetFile)
 
