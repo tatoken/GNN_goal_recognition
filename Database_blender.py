@@ -21,4 +21,4 @@ def concatena_json(cartella_input, file_output):
     with open(file_output, "w") as f_out:
         json.dump(tutti_dati, f_out, indent=4)
 
-concatena_json("Dfs16", "Dfs16.json")
+concatena_json("DfsRandomJump16", "DfsRandomJump16.json")

@@ -55,9 +55,10 @@ if __name__ == "__main__":
         file=i
         file_name = f"datasetMapsNew/maps_dataset_{size}/maps_dataset_{size}_{file}.json"
         map_info = LoaderMapFirstType.load_map_from_json(file_name)
-        for m in range(len(map_info)):
+        for m in range(len(map_info)): 
             solution_paths=[]
             goals=[]
+            manhattanDistances=[]
             #mapTest={0:[1,2],1:[0],2:[0,4],3:[6],4:[2,5],5:[4,6],6:[3,5]}
             for sd in range(len(map_info[m].source_destinations)):
 
@@ -81,20 +82,36 @@ if __name__ == "__main__":
                 while not source!=destination:
                     destination=random.randint(0,numberOfFreeCell-1)
 
-                #DijkstraPath= nx.astar_path(G,source, destination)
-
-                #visualize_map(map_info[m],DijkstraPath,source,destination,coord_to_node)
-                DfsPath = dfs(newGraph, source, destination)
-                #DfsRandomPath = dfs(graphMapTranslater.translateMapIntoGraph(),source, destination,True)
+                chiave = None
+                for k, v in coord_to_node.items():
+                    if v == source:
+                        chiaveS = k
+                    if v == destination:
+                        chiaveD = k
                 
-                solution_paths.append(DfsPath)
+
+                rs = chiaveS[0]
+                cs = chiaveS[1]
+
+                rd = chiaveD[0]
+                cd = chiaveD[1]
+
+                #DijkstraPath= nx.astar_path(G,source, destination)
+                #DfsPath = dfs(newGraph, source, destination)
+                DfsRandomPath = dfs(newGraph,source, destination,True)
+
+                manhattanDistances.append(abs(rs - rd) + abs(cs - cd))
+
+                #visualize_map(map_info[m],DfsRandomPath,source,destination,coord_to_node)
+
+                solution_paths.append(DfsRandomPath)
                 goals.append(destination)
 
-            mapSecond=MapSecondType(solution_paths,newGraph,goals)
+            mapSecond=MapSecondType(solution_paths,manhattanDistances,newGraph,goals,map_info[m].percentage_obstacles)
             item=mapSecond.getItem()
                 
             file_number+=1
-            datasetFile=f"Dfs16/DfsPathDatasetSize{size}File{file_number}.json"
+            datasetFile=f"DfsRandomJump16/DfsRandomJumpDatasetSize{size}File{file_number}.json"
             
             SaverItem.save_items(item,datasetFile)
 

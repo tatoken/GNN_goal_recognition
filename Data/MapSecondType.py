@@ -2,8 +2,9 @@ from Data.Item import Item
 
 class MapSecondType:
 
-    def __init__(self,paths,mapGraph,goals):
+    def __init__(self,paths,manhattanDistances,mapGraph,goals,obstaclePerc):
         self.paths=paths
+        self.manhattanDistances=manhattanDistances
 
         self.map=[]
         for nodo, _ in mapGraph.items():
@@ -11,7 +12,20 @@ class MapSecondType:
 
         self.goals=goals
         
-        self.item=Item(self.makeV(),self.makeE(mapGraph),self.makeY(),self.paths)
+        self.item=Item(self.makeV(),self.makeE(mapGraph),self.makeY(),self.paths,self.computeOptimalityOf(),self.computeAvgLenght(),obstaclePerc)
+
+    def computeOptimalityOf(self):
+       result=[]
+       for pathNr in range(len(self.paths)):
+            result.append(self.manhattanDistances[pathNr]/(len(self.paths[pathNr])-1)*100)
+       return result
+        
+
+    def computeAvgLenght(self):
+        sum=0
+        for path in self.paths:
+            sum+=len(path)
+        return sum/len(self.paths)
 
     def makeV(self):
         resV=[]
@@ -28,6 +42,7 @@ class MapSecondType:
 
             resV.append(res)
         return resV
+        
     
             
     def makeY(self):

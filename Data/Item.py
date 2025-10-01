@@ -7,3 +7,6 @@ class Item:
     E: List[Tuple[int, int]]
     Y: List[List[int]]
     O: List[List[int]] #order of nodes in V paths
+    Optimality: List[float]
+    AvgLength: float
+    ObstaclePerc: float
