@@ -47,7 +47,7 @@ def visualize_map(map_info,path,source,destination,cells_mapping):
 
 if __name__ == "__main__":
 
-    size = 16
+    size = 8
     file=1
     file_number=0
 
@@ -111,7 +111,7 @@ if __name__ == "__main__":
             item=mapSecond.getItem()
                 
             file_number+=1
-            datasetFile=f"DfsRandomJump16/DfsRandomJumpDatasetSize{size}File{file_number}.json"
+            datasetFile=f"DfsRandomJump8/DfsRandomJumpDatasetSize{size}File{file_number}.json"
             
             SaverItem.save_items(item,datasetFile)
 
