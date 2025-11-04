@@ -1,4 +1,5 @@
 from Data.Item import Item
+import numpy as np
 
 class MapSecondType:
 
@@ -14,6 +15,7 @@ class MapSecondType:
         
         self.item=Item(self.makeV(),self.makeE(mapGraph),self.makeY(),self.paths,self.computeOptimalityOf(),self.computeAvgLenght(),obstaclePerc)
 
+
     def computeOptimalityOf(self):
        result=[]
        for pathNr in range(len(self.paths)):
@@ -26,6 +28,7 @@ class MapSecondType:
         for path in self.paths:
             sum+=len(path)
         return sum/len(self.paths)
+
 
     def makeV(self):
         resV=[]
@@ -43,10 +46,8 @@ class MapSecondType:
             resV.append(res)
         return resV
         
-    
             
     def makeY(self):
-
         resY=[]
         for goal in self.goals:
             res=[]
@@ -58,6 +59,7 @@ class MapSecondType:
             resY.append(res)
         return resY
 
+
     def makeE(self,mapGraph):
         res=[]
         
@@ -67,5 +69,21 @@ class MapSecondType:
 
         return res
     
+
     def getItem(self):
         return self.item
+    
+    def direction_prob(map_shape, pos_t, direction, alpha=0.3, beta=1.5):
+        rows, cols = map_shape
+        prob = np.zeros((rows, cols))
+        for r in range(rows):
+            for c in range(cols):
+                d = abs(r - pos_t[0]) + abs(c - pos_t[1])
+                match = 0
+                if direction == 'up' and r < pos_t[0]: match = 1
+                if direction == 'down' and r > pos_t[0]: match = 1
+                if direction == 'left' and c < pos_t[1]: match = 1
+                if direction == 'right' and c > pos_t[1]: match = 1
+                prob[r, c] = np.exp(-alpha*d) * (1 + beta*match)
+        prob /= prob.sum()
+        return prob

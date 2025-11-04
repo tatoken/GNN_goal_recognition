@@ -4,7 +4,8 @@ from PyQt6.QtCore import Qt,QTimer
 import time
 
 class PathVisualizer(QWidget):
-    def __init__(self, size, M, S, G,path_list,cells_mapping,delay):
+
+    def __init__(self, size, M, S, G,path_list,cells_mapping,delay,matrix_list=None):
         super().__init__()
         self.size = size
         self.M = M
@@ -28,7 +29,12 @@ class PathVisualizer(QWidget):
         self.cells_mapping=cells_mapping
         self.delay=delay
         self.cell_size = 50
-        self.initUI()
+        self.matrix_list=matrix_list
+
+        if self.matrix_list is not  None:
+            self.initUIHeatmap()
+        else:
+            self.initUI()
     
     def initUI(self):
         self.setWindowTitle("Path Visualizer")
@@ -57,6 +63,90 @@ class PathVisualizer(QWidget):
         self.setLayout(main_layout)
         
         self.draw_grid()
+
+    def initUIHeatmap(self):
+        self.setWindowTitle("Path Visualizer")
+        self.setGeometry(100, 100, 800, 600)
+        
+        main_layout = QVBoxLayout()
+        
+        # Pulsanti zoom
+        button_layout = QHBoxLayout()
+        zoom_in_btn = QPushButton("Zoom In")
+        zoom_out_btn = QPushButton("Zoom Out")
+        start_btn = QPushButton("Start")
+        zoom_in_btn.clicked.connect(self.zoom_in)
+        zoom_out_btn.clicked.connect(self.zoom_out)
+        start_btn.clicked.connect(self.compute_path)
+        button_layout.addWidget(zoom_in_btn)
+        button_layout.addWidget(zoom_out_btn)
+        button_layout.addWidget(start_btn)
+        main_layout.addLayout(button_layout)
+        
+        # QGraphicsView e Scene
+        self.scene = QGraphicsScene()
+        self.view = QGraphicsView(self.scene)
+        self.view.setRenderHint(self.view.renderHints())
+        main_layout.addWidget(self.view)
+        self.setLayout(main_layout)
+        
+        self.animate_heatmaps(self.matrix_list)
+
+    def animate_heatmaps(self, matrix_list):
+        """
+        matrix_list: lista di matrici NxN con valori [0..1]
+        """
+        self.matrix_list = matrix_list
+        self.current_matrix_index = 0
+
+        self._heatmap_timer = QTimer(self)
+        self._heatmap_timer.setInterval(500)
+        self._heatmap_timer.timeout.connect(self._draw_next_heatmap_frame)
+        self._heatmap_timer.start()
+
+
+    def _draw_next_heatmap_frame(self):
+        if self.current_matrix_index >= len(self.matrix_list):
+            self._heatmap_timer.stop()
+            return
+
+        matrix = self.matrix_list[self.current_matrix_index]
+        self.scene.clear()
+
+        for r in range(self.size):
+            for c in range(self.size):
+                x = c * self.cell_size
+                y = r * self.cell_size
+
+                value = matrix[r][c]  # valore in [0,1]
+                if value <= 0.01:
+                    color = QColor(0, 0, 255)      # blu
+                elif value <= 0.02:
+                    color = QColor(0, 255, 255)    # ciano
+                elif value <= 0.03:
+                    color = QColor(0, 255, 0)      # verde
+                elif value <= 0.04:
+                    color = QColor(255, 255, 0)    # giallo
+                else:
+                    color = QColor(255, 0, 0)      # rosso
+
+                if(self.M[r][c] != 1):
+
+                    rect = QGraphicsRectItem(x, y, self.cell_size, self.cell_size)
+                    rect.setBrush(QBrush(color))
+                    rect.setPen(QPen(Qt.GlobalColor.black, 1))
+                    self.scene.addItem(rect)
+                else:
+                    rect = QGraphicsRectItem(x, y, self.cell_size, self.cell_size)
+                    rect.setBrush(QBrush(QColor(95,95, 95) ))
+                    rect.setPen(QPen(Qt.GlobalColor.black, 1))
+                    self.scene.addItem(rect)
+
+        self.scene.setSceneRect(0, 0, self.size * self.cell_size, self.size * self.cell_size)
+        self.view.setBackgroundBrush(QBrush(Qt.GlobalColor.white))
+
+        self.current_matrix_index += 1
+
     
     def draw_grid(self):
         self.scene.clear()
