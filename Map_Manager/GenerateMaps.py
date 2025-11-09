@@ -4,7 +4,6 @@ from collections import deque
 import os
 
 def is_connected(grid):
-    """Controlla se tutte le celle libere (0) sono connesse."""
     size = len(grid)
     free_cells = [(r, c) for r in range(size) for c in range(size) if grid[r][c] == 0]
 

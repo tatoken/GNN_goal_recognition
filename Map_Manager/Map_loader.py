@@ -1,7 +1,8 @@
 import json
-from Data.MapFirstType import MapFirstType
 
-def load_map_from_json(file_name: str) -> MapFirstType:
+from Map_Manager.Map import Map
+
+def load_map_from_json(file_name: str) -> Map:
     with open(file_name, 'r') as f:
         data = json.load(f)
     
@@ -12,7 +13,7 @@ def load_map_from_json(file_name: str) -> MapFirstType:
         for source_and_destination in data[i].get("instances"):
             source_and_destionations.append(tuple(source_and_destination.get("source_destination", (0, 0))))
         
-        maps.append(MapFirstType(
+        maps.append(Map(
             map_data=data[i].get("map", []),
             source_destinations=source_and_destionations,
             percentage_obstacles=float(data[i].get("percentage_obstacles", 0.0)),

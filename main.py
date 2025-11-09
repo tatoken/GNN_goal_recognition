@@ -3,14 +3,13 @@ import sys
 import random
 import numpy as np
 
-from Loaders import LoaderMapFirstType
-from PathVisualizer import PathVisualizer
+from Map_Manager import Map_loader
+from Path_Visualizer.PathVisualizer import PathVisualizer
 import networkx as nx
-from Data.GraphMapFirstType import GraphMapFirstType
-from Savers import SaverItem
+from Map_Manager.GraphMap import GraphMapFirstType
+from Map_Manager import Output_instance_saver
 
-from Data.MapFirstType import MapFirstType
-from Data.MapSecondType import MapSecondType
+from Map_Manager.MapSecondType import MapSecondType
 
 def count_obstacles_on_path(map_data, start, end):
     r0, c0 = start
@@ -145,8 +144,8 @@ if __name__ == "__main__":
 
     for i in range(1,101): 
         file=i
-        file_name = f"datasetMapsNew/maps_dataset_{size}/maps_dataset_{size}_{file}.json"
-        map_info = LoaderMapFirstType.load_map_from_json(file_name)
+        file_name = f"Datasets/Modified_dataset/maps_dataset_{size}/maps_dataset_{size}_{file}.json"
+        map_info = Map_loader.load_map_from_json(file_name)
         for m in range(len(map_info)): 
             solution_paths=[]
             goals=[]
@@ -208,7 +207,7 @@ if __name__ == "__main__":
             file_number+=1
             datasetFile=f"DfsRandomJump8/DfsRandomJumpDatasetSize{size}File{file_number}.json"
             
-            SaverItem.save_items(item,datasetFile)
+            Output_instance_saver.save_items(item,datasetFile)
 
 
                 

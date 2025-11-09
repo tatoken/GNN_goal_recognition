@@ -1,4 +1,4 @@
-from Data.Item import Item
+from Map_Manager.Item import Item
 import numpy as np
 
 class MapSecondType:
