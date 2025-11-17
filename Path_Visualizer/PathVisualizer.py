@@ -3,22 +3,24 @@ from PyQt6.QtGui import QColor, QBrush, QFont, QPen
 from PyQt6.QtCore import Qt, QTimer
 import numpy as np
 
+from Map_Manager.Map_graph_manager import Map_graph_manager
+
 class PathVisualizer(QWidget):
 
-    def __init__(self, size, M, S, G, path_list, cells_mapping, delay, matrix_list=None):
+    def __init__(self, map_graph_manager:Map_graph_manager, S, G, path, delay, matrix_list=None):
         super().__init__()
-        self.size = size
-        self.M = M
+        self.map_graph_manager=map_graph_manager
+        self.map= map_graph_manager.get_map().map_data
+        self.map_size=len(self.map)
+
         self.matrix_list = matrix_list
         self.has_heatmap = matrix_list is not None
 
         # Converti source/dest da nodo a cella (r,c)
-        for k, v in cells_mapping.items():
-            if v == S: self.S = k[0]*size + k[1]
-            if v == G: self.G = k[0]*size + k[1]
+        self.S=map_graph_manager.node_id_to_coord(S)
+        self.G=map_graph_manager.node_id_to_coord(G)
 
-        self.path_list = path_list
-        self.cells_mapping = cells_mapping
+        self.path = path
         self.delay = delay
         self.cell_size = 50
 
@@ -52,7 +54,7 @@ class PathVisualizer(QWidget):
         # • PATH VIEW
         self.path_scene = QGraphicsScene()
         self.path_view = QGraphicsView(self.path_scene)
-        self.path_view.setFixedSize(self.size*self.cell_size+2, self.size*self.cell_size+2)
+        self.path_view.setFixedSize(self.map_size*self.cell_size+2, self.map_size*self.cell_size+2)
         map_layout.addWidget(self.path_view)
         
 
@@ -60,7 +62,7 @@ class PathVisualizer(QWidget):
         if self.has_heatmap:
             self.heat_scene = QGraphicsScene()
             self.heat_view = QGraphicsView(self.heat_scene)
-            self.heat_view.setFixedSize(self.size*self.cell_size+2, self.size*self.cell_size+2)
+            self.heat_view.setFixedSize(self.map_size*self.cell_size+2, self.map_size*self.cell_size+2)
             map_layout.addWidget(self.heat_view)
 
         main_layout.addLayout(map_layout)
@@ -73,7 +75,7 @@ class PathVisualizer(QWidget):
         if self.has_heatmap:
             self.current_matrix_index = 0
             self.heat_timer = QTimer(self)
-            self.heat_timer.setInterval(900)
+            self.heat_timer.setInterval(self.delay)
             self.heat_timer.timeout.connect(self.draw_heatmap_frame)
             self.heat_timer.start()
 
@@ -83,8 +85,8 @@ class PathVisualizer(QWidget):
     def draw_grid(self):
         self.path_scene.clear()
         idx = 0
-        for r in range(self.size):
-            for c in range(self.size):
+        for r in range(self.map_size):
+            for c in range(self.map_size):
                 x, y = c*self.cell_size, r*self.cell_size
                 rect = QGraphicsRectItem(x, y, self.cell_size, self.cell_size)
 
@@ -94,12 +96,12 @@ class PathVisualizer(QWidget):
                 elif idx == self.G:
                     rect.setBrush(QBrush(QColor(255,215,0)))
                     text = "G"
-                elif self.M[r][c] == 1:
+                elif self.map[r][c] == 1:
                     rect.setBrush(QBrush(QColor(80,80,80)))
                     text = ""
                 else:
                     rect.setBrush(QBrush(QColor(210,210,210)))
-                    text = str(self.cells_mapping[(r,c)])
+                    text = str(self.map_graph_manager.coord_to_node_id([r,c]))
 
                 rect.setPen(QPen(QColor(255,255,255), 1))
                 self.path_scene.addItem(rect)
@@ -126,16 +128,16 @@ class PathVisualizer(QWidget):
 
         maxv = np.max(mat)
 
-        for r in range(self.size):
-            for c in range(self.size):
+        for r in range(self.map_size):
+            for c in range(self.map_size):
                 x, y = c*self.cell_size, r*self.cell_size
-                v = mat[r][c] / maxv
+                v = mat[r][c] / maxv if maxv != 0 else 0.0
 
-                # Gradient red ↔ blue
-                color = QColor(int(255*v), 0, int(255*(1-v)))
+                # Colore super-sensibile al millesimo
+                color = jet_color(v)
 
                 rect = QGraphicsRectItem(x, y, self.cell_size, self.cell_size)
-                rect.setBrush(QBrush(color) if self.M[r][c]==0 else QBrush(QColor(70,70,70)))
+                rect.setBrush(QBrush(color) if self.map[r][c] == 0 else QBrush(QColor(70,70,70)))
                 rect.setPen(QPen(QColor(255,255,255), 1))
                 self.heat_scene.addItem(rect)
 
@@ -152,13 +154,12 @@ class PathVisualizer(QWidget):
         self.timer.start()
 
     def highlight_next(self):
-        if self._path_index >= len(self.path_list):
+        if self._path_index >= len(self.path):
             self.timer.stop()
             return
 
-        node = self.path_list[self._path_index]
-        for k,v in self.cells_mapping.items():
-            if v == node: r,c = k; break
+        node = self.path[self._path_index]
+        r,c=self.map_graph_manager.node_id_to_coord(node)
 
         for item in self.path_scene.items():
             if isinstance(item, QGraphicsRectItem):
@@ -167,3 +168,10 @@ class PathVisualizer(QWidget):
                     break
 
         self._path_index += 1
+
+def jet_color(v: float) -> QColor:
+    """Gradiente continuo tipo 'jet', molto sensibile anche a variazioni piccolissime."""
+    r = min(1.0, max(0.0, 1.5 - abs(4*v - 3)))
+    g = min(1.0, max(0.0, 1.5 - abs(4*v - 2)))
+    b = min(1.0, max(0.0, 1.5 - abs(4*v - 1)))
+    return QColor(int(r*255), int(g*255), int(b*255))

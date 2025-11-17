@@ -1,7 +1,7 @@
-from Map_Manager.Item import Item
+from Map_Manager.Data.Map_path_solution_output import Map_path_solution_output
 import numpy as np
 
-class MapSecondType:
+class Map_output:
 
     def __init__(self,paths,manhattanDistances,mapGraph,goals,obstaclePerc):
         self.paths=paths
@@ -13,7 +13,7 @@ class MapSecondType:
 
         self.goals=goals
         
-        self.item=Item(self.makeV(),self.makeE(mapGraph),self.makeY(),self.paths,self.computeOptimalityOf(),self.computeAvgLenght(),obstaclePerc)
+        self.item=Map_path_solution_output(self.makeV(),self.makeE(mapGraph),self.makeY(),self.paths,self.computeOptimalityOf(),self.computeAvgLenght(),obstaclePerc)
 
 
     def computeOptimalityOf(self):

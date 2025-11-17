@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from typing import List, Tuple
 
 @dataclass
-class Item:
+class Map_path_solution_output:
     V: List[List[Tuple[int, int, int]]]
     E: List[Tuple[int, int]]
     Y: List[List[int]]

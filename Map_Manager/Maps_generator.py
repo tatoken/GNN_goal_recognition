@@ -1,6 +1,5 @@
 import random
 import json
-from collections import deque
 import os
 
 def is_connected(grid):
@@ -25,7 +24,7 @@ def is_connected(grid):
     return len(visited) == len(free_cells)
 
 
-def generate_connected_map(map_id: int, size: int = 4, percentage_obstacles: float = 0.3, n_instances: int = 10):
+def generate_connected_map(map_id: int, size: int = 4, percentage_obstacles: float = 0.3):
     total_cells = size * size
     n_obstacles = int(total_cells * percentage_obstacles)
 
@@ -48,45 +47,40 @@ def generate_connected_map(map_id: int, size: int = 4, percentage_obstacles: flo
             grid[r][c] = 0
         attempts += 1
 
-    # Celle libere lineari
-    free_cells = [r * size + c for r in range(size) for c in range(size) if grid[r][c] == 0]
-
-    # Genera istanze source-destination
-    instances = []
-    for inst_id in range(n_instances):
-        if len(free_cells) < 2:
-            break
-        src, dst = random.sample(free_cells, 2)
-        instances.append({
-            "id": map_id * 10000 + inst_id,
-            "source_destination": [src, dst]
-        })
-
     result = {
         "map_id": map_id,
         "size": size,
         "percentage_obstacles": f"{percentage_obstacles:.2f}",
-        "map": grid,
-        "instances": instances
+        "map": grid
     }
     return result
 
 
-if __name__ == "__main__":
-    random.seed(42)
-    output_dir = "datasetMapsNew/maps_dataset_8"
+def  generate_maps(size_of_maps,random_seed=1,maps_per_file=10,num_file=100,output_dir="maps_generated",obst_perc_min=0,obst_perc_max=0.5):
+    random.seed(random_seed)
     os.makedirs(output_dir, exist_ok=True)
 
-    for file_id in range(1, 101):  # 100 file
-        perc = random.uniform(0, 0.7)
-        data = generate_connected_map(
-            map_id=file_id,
-            size=8,
-            percentage_obstacles=perc,
-            n_instances=10
-        )
-        file_path = os.path.join(output_dir, f"maps_dataset_8_{file_id}.json")
-        with open(file_path, "w") as f:
-            json.dump([data], f, indent=2)
+    global_map_id = 1
 
-    print("✅ Generati 100 file JSON nella cartella 'maps_output'")
+    for file_id in range(1, num_file + 1):
+        maps_in_this_file = []
+
+        for _ in range(maps_per_file):
+            perc = random.uniform(obst_perc_min, obst_perc_max)
+            
+            data = generate_connected_map(
+                map_id=global_map_id,
+                size=size_of_maps,
+                percentage_obstacles=perc
+            )
+            maps_in_this_file.append(data)
+            global_map_id += 1
+
+        file_path = os.path.join(
+            output_dir, f"maps_dataset_{size_of_maps}_{file_id}.json"
+        )
+
+        with open(file_path, "w") as f:
+            json.dump(maps_in_this_file, f, indent=2)
+
+generate_maps(8)
