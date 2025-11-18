@@ -1,19 +1,23 @@
 from Map_Manager.Data.Map_path_solution_output import Map_path_solution_output
 import numpy as np
 
+from Map_Manager.Map_graph_manager import Map_graph_manager
+
 class Map_output:
 
-    def __init__(self,paths,manhattanDistances,mapGraph,goals,obstaclePerc):
+    def __init__(self,paths,manhattanDistances,graphMapManager:Map_graph_manager,goals,matrix_percentage_list,obstaclePerc):
         self.paths=paths
         self.manhattanDistances=manhattanDistances
+        self.graphMapManager=graphMapManager
+        self.size=len(graphMapManager.get_map().map_data)
 
         self.map=[]
-        for nodo, _ in mapGraph.items():
+        for nodo, _ in graphMapManager.get_graph().items():
             self.map.append(nodo)
 
         self.goals=goals
         
-        self.item=Map_path_solution_output(self.makeV(),self.makeE(mapGraph),self.makeY(),self.paths,self.computeOptimalityOf(),self.computeAvgLenght(),obstaclePerc)
+        self.item=Map_path_solution_output(self.makeV(),self.makeE(),self.makeY(matrix_percentage_list),self.paths,self.computeOptimalityOf(),self.computeAvgLenght(),obstaclePerc)
 
 
     def computeOptimalityOf(self):
@@ -42,28 +46,28 @@ class Map_output:
                         res.append([0,0,1])
                 else:
                     res.append([1,0,0])
-
             resV.append(res)
         return resV
         
             
-    def makeY(self):
+    def makeY(self,matrix_percentage_list):
         resY=[]
-        for goal in self.goals:
-            res=[]
-            for cell in self.map:
-                if(cell==goal):
-                    res.append(1)
-                else:
-                    res.append(0)
-            resY.append(res)
+        for matrix_percentage in matrix_percentage_list:
+
+            flatted_matrix = []
+            for row in range(self.size):
+                for col in range(self.size):
+                    if(self.graphMapManager.get_map().map_data[row][col]==0):
+                        flatted_matrix.append(matrix_percentage[row][col])
+
+            resY.append(flatted_matrix)
         return resY
 
 
-    def makeE(self,mapGraph):
+    def makeE(self):
         res=[]
         
-        for nodo, vicini in mapGraph.items():
+        for nodo, vicini in self.graphMapManager.get_graph().items():
             for vicino in vicini:
                 res.append([nodo,vicino])
 
