@@ -115,7 +115,19 @@ class Map_graph_manager:
         return n_obs
 
 
-    def direction_prob(self,map, size, pos_t, direction, alpha=0.3, beta=1.5, attenuation=0.4, gamma=0.4):
+    def direction_prob(self,map, size, pos_t, direction, alpha=0.1, beta=1.5, attenuation=0.4, gamma=0.4):
+        """
+        Calcola una matrice di probabilità che si propaga dalla posizione pos_t nella direzione data,
+        tenendo conto degli ostacoli che attenuano la propagazione.
+
+        Args:
+            map_data (np.ndarray): matrice binaria (0=libero, 1=ostacolo)
+            pos_t (tuple): posizione attuale (r, c)
+            direction (str): direzione di movimento ('up', 'down', 'left', 'right')
+            alpha (float): coeff. di decadimento con la distanza
+            beta (float): coeff. che rafforza la direzione scelta
+            gamma (float): coeff. di attenuazione per ogni ostacolo sulla linea di vista
+        """
         prob = np.zeros((size, size))
 
         for r in range(size):

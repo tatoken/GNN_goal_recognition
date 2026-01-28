@@ -6,3 +6,8 @@ env/
 *.egg-info/
 build/
 dist/
+wandb/
+gnn/
+Resulted_dataset/
+util_commands.txt
+*.json

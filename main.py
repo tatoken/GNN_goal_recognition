@@ -1,12 +1,12 @@
 import os
-from PyQt6.QtWidgets import QApplication
+#from PyQt6.QtWidgets import QApplication
 import sys
 import random
 import platform
 
 from Datasets.Database_blender import concatena_json
 from Map_Manager import Map_loader
-from Path_Visualizer.PathVisualizer import PathVisualizer
+#from Path_Visualizer.PathVisualizer import PathVisualizer
 from Map_Manager.Map_graph_manager import Map_graph_manager
 from Map_Manager import Output_instance_saver
 
@@ -35,7 +35,7 @@ def dfs(graph, start, goal,randomJump=False):
             
     return None
 
-
+'''
 def visualize_map(map_graph_manager,path,source,destination,matrix_list):
     app = QApplication(sys.argv)
 
@@ -49,6 +49,7 @@ def visualize_map(map_graph_manager,path,source,destination,matrix_list):
     )
     window.show()
     sys.exit(app.exec())
+'''
 
 def print_info_of_current_process(source_destinations_per_map, source_destination):
     print("█"*(source_destination+1),end="")
