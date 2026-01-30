@@ -26,7 +26,7 @@ Il progetto permette di:
 
 ## Caso d'Uso
 
-Il progetto è progettato per il **Goal Recognition** - il problema di inferire l'obiettivo di un agente osservando la sua traiettoria parziale su una mappa.
+Il progetto ha come scopo ultimo il **Goal Recognition** - il problema di inferire l'obiettivo di un agente osservando la sua traiettoria parziale su una mappa.
 
 **Input:** Sequenza di posizioni visitate da un agente  
 **Output:** Previsione dell'obiettivo finale (cella destinazione)
